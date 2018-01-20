@@ -4,16 +4,23 @@ using UnityEngine;
 
 public class Alien : MonoBehaviour {
 
+    public int pointValue;
+
     public GameObject deathExplosion;
 	// Use this for initialization
 	void Start () {
-		
+        pointValue = 10;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		
 	}
+    IEnumerator Example()
+    {
+        yield return new WaitForSeconds(1); //this will wait 5 seconds 
+        Destroy(gameObject);
+    }
     public void Die() {
         //Destroy removes teh gameObject from the scene and marks
         //it for garbage collection
@@ -22,6 +29,10 @@ public class Alien : MonoBehaviour {
         //flys in the right way
         Instantiate(deathExplosion, gameObject.transform.position,
             Quaternion.AngleAxis(-90, Vector3.right));
+        GameObject obj = GameObject.Find("GlobalObject");
+        Global g = obj.GetComponent<Global>();
+        g.score += pointValue;
         Destroy(gameObject);
+        //Example();
     }
 }
