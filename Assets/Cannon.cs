@@ -11,6 +11,7 @@ public class Cannon : MonoBehaviour {
     public float bulletCoolDown;
     public float timeSinceLastBullet;
     public GameObject deathExplosion;
+    public AudioClip deathKnell;
 
 	// Use this for initialization
 	void Start () {
@@ -26,21 +27,22 @@ public class Cannon : MonoBehaviour {
         if(Input.GetButtonDown("Fire1") && 
             timeSinceLastBullet >= bulletCoolDown) {
             timeSinceLastBullet = 0.0f;
-                //Debug.Log("Fire! " + rotation);
-                //spawn at the tip of the ship
-                Vector3 spawnPos = gameObject.transform.position;
-                spawnPos.x += 1.5f * Mathf.Sin(rotation * Mathf.PI / 180.0f);
-                spawnPos.z += 1.5f * Mathf.Cos(rotation * Mathf.PI / 180.0f);
+            //Debug.Log("Fire! " + rotation);
+            //spawn at the tip of the ship
+            Vector3 spawnPos = gameObject.transform.position;
+            spawnPos.x += 1.5f * Mathf.Sin(rotation * Mathf.PI / 180.0f);
+            spawnPos.z += 1.5f * Mathf.Cos(rotation * Mathf.PI / 180.0f);
 
-                // instantiate the Bullet
-                GameObject obj = Instantiate(bullet, spawnPos,
-                    Quaternion.identity) as GameObject;
+            // instantiate the Bullet
+            GameObject obj = Instantiate(bullet, spawnPos,
+                Quaternion.identity) as GameObject;
 
-                // get the Bullet Script Component of the new Bullet instance
-                Bullet b = obj.GetComponent<Bullet>();
+            // get the Bullet Script Component of the new Bullet instance
+            Bullet b = obj.GetComponent<Bullet>();
+            b.fromPlayer = true;
 
-                // set the direction the Bullet will travel in
-                Quaternion rot = Quaternion.Euler(new Vector3(0, rotation, 0));
+            // set the direction the Bullet will travel in
+            Quaternion rot = Quaternion.Euler(new Vector3(0, rotation, 0));
                 b.heading = rot;
         }
     }
@@ -62,8 +64,16 @@ public class Cannon : MonoBehaviour {
         //gameObject.transform.position = updatedPosition;
 	}
     public void Die() {
+        AudioSource.PlayClipAtPoint(deathKnell, gameObject.transform.position);
         Instantiate(deathExplosion, gameObject.transform.position,
             Quaternion.AngleAxis(-90, Vector3.right));
+        GameObject globalObject = GameObject.Find("GlobalObject");
+        Global g = globalObject.GetComponent<Global>();
+        g.UpdateLives();
+        Destroy(gameObject);
+    }
+    public void DieGameOver() {
+        Debug.Log("Destroying cannon");
         Destroy(gameObject);
     }
 }
