@@ -23,6 +23,7 @@ public class Global : MonoBehaviour {
 
     public bool gameOver;
 
+    private Vector3 camOrigPos;
     // Use this for initialization
     void Start()
     {
@@ -30,6 +31,8 @@ public class Global : MonoBehaviour {
         totalKilledAliens_big = 0;
         totalKilledAliens_med = 0;
         totalKilledAliens_small = 0;
+
+        camOrigPos = Camera.main.transform.position;
 
         score = 0;
         timer = 0;
@@ -70,10 +73,13 @@ public class Global : MonoBehaviour {
     void PlayGame() {
 
         if (playerRespawn) {
+            CameraShake();
             playerRespawnTimer -= Time.deltaTime;
             if (playerRespawnTimer <= 0.0f) {
                 Instantiate(playerObjToSpawn, new Vector3(0, 0, -6.5f), Quaternion.identity);
                 playerRespawn = false;
+                Debug.Log("Reset cam to: " + camOrigPos.x + ", " + camOrigPos.y + ", " +camOrigPos.z);
+                Camera.main.transform.position = camOrigPos;
             }
         }
         //timer += Time.deltaTime;
@@ -111,4 +117,12 @@ public class Global : MonoBehaviour {
         playerRespawnTimer = 2;
     }
 
+    private void CameraShake()
+    {
+        Vector3 camPos = Camera.main.transform.position;
+        float range = 0.2f;
+        float x = Random.Range(-range, range);
+        float y = Random.Range(-range, range);
+        Camera.main.transform.Translate(new Vector3(x, y, 0));//THIS IS LOCAL
+    }
 }
