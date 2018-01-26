@@ -36,9 +36,9 @@ public class AlienManager : MonoBehaviour
         totalAliens = global.totalAliens;
         aliens = new GameObject[totalAliens];
         fireTimer = 0;
-        fireTimerLimit = 1;
         moveTimer = 0;
-        moveTimerLimit = 1;
+        fireTimerLimit = 2.0f;
+        moveTimerLimit = fireTimerLimit;
         speed = 1.0f;
         originInScreenCoords = Camera.main.WorldToScreenPoint(new Vector3(0, 0, 0));
 
@@ -62,6 +62,7 @@ public class AlienManager : MonoBehaviour
     }
 
     void SpawnAndPlaceAliens() {
+        int alienWithPowerUp = (int)Random.Range(0.0f, (float)colRemaining);
         float marginX = 1.0f / 5.0f;
         float startX = marginX;
         float startY = 1.0f / 2.0f;
@@ -80,6 +81,8 @@ public class AlienManager : MonoBehaviour
             Camera.main.ScreenToWorldPoint(
                 new Vector3(horizontalPos, verticalPos, originInScreenCoords.z)),
             Quaternion.identity);
+            aliens[i].GetComponent<Alien>().hasPowerUp = 
+                i == alienWithPowerUp ? true : false;
         }
     }
 

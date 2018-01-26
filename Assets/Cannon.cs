@@ -9,21 +9,26 @@ public class Cannon : MonoBehaviour {
     public GameObject bullet;//the GameObject to spawn
     public float rotation;
     public float bulletCoolDown;
+    private const float bulletCoolDownNormal = 1;
     public float timeSinceLastBullet;
     public GameObject deathExplosion;
     public AudioClip deathKnell;
+    public float powerUpTime;
 
 	// Use this for initialization
 	void Start () {
         //turnSpeed = 0.5f;
-        thrustSpeed = 0.10f;
+        powerUpTime = 0;
+        thrustSpeed = 0.20f;
         rotation = 0.0f;
-        bulletCoolDown = 1.0f;
+        bulletCoolDown = bulletCoolDownNormal;
         timeSinceLastBullet = 0.0f;
 	}
 
     private void Update() {
         timeSinceLastBullet += Time.deltaTime;
+        powerUpTime -= Time.deltaTime;
+        bulletCoolDown = powerUpTime > 0 ? bulletCoolDownNormal * 0.1f : bulletCoolDownNormal;
         if(Input.GetButtonDown("Fire1") && 
             timeSinceLastBullet >= bulletCoolDown) {
             timeSinceLastBullet = 0.0f;

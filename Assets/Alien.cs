@@ -9,9 +9,11 @@ public class Alien : MonoBehaviour {
     public GameObject deathExplosion;
     public float rotation;
     public GameObject bullet;//the GameObject to spawn
+    public GameObject bulletPowerUp;//the GameObject to spawn
     public Vector2 widthThreshold;
     public Vector2 heightThreshold;
     public bool active;
+    public bool hasPowerUp;
 
 	// Use this for initialization
 	void Start () {
@@ -47,18 +49,26 @@ public class Alien : MonoBehaviour {
         //flys in the right way
 
         //play sound at location
+        GameObject obj = GameObject.Find("GlobalObject");
+        Global g = obj.GetComponent<Global>();
+        if (active) {
+            g.score += pointValue;
+            g.UpdateTotalKilledAliens(0);
+        }
         active = false;
         AudioSource.PlayClipAtPoint(deathKnell, gameObject.transform.position);
 
         Instantiate(deathExplosion, gameObject.transform.position,
             Quaternion.AngleAxis(-90, Vector3.right));
 
-        GameObject obj = GameObject.Find("GlobalObject");
-        Global g = obj.GetComponent<Global>();
-        g.score += pointValue;
-        g.UpdateTotalKilledAliens(0);
         gameObject.GetComponent<Rigidbody>().useGravity = true;
-        //Destroy(gameObject);
+        if (hasPowerUp) {
+            Vector3 spawnPos = gameObject.transform.position;
+            spawnPos.x += 1.5f * Mathf.Sin(rotation * Mathf.PI / 180.0f);
+            spawnPos.z += 1.5f * Mathf.Cos(rotation * Mathf.PI / 180.0f);
+            GameObject objPowerUp = Instantiate(bulletPowerUp, spawnPos, Quaternion.identity) as GameObject;
+            Destroy(gameObject);
+        }
         //Example();
     }
     private void OnCollisionEnter(Collision collision)
@@ -68,11 +78,13 @@ public class Alien : MonoBehaviour {
 
         Collider collider = collision.collider;//the thing we collided with
         if (collider.CompareTag("Alien")&&active) {
-            active = false;
-            GetComponent<Rigidbody>().useGravity = true;
             //get handle to alien script and tell it to die
             Alien alien = collider.gameObject.GetComponent<Alien>();
             alien.Die();
+            //active = false;
+            //GetComponent<Rigidbody>().useGravity = true;
+            Die();
+
             //Destroy(gameObject);
         }
     }

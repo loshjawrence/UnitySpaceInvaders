@@ -66,7 +66,7 @@ public class Bullet : MonoBehaviour {
             SetPhysicsDeadState();
             //get handle to alien script and tell it to die
             Cannon cannon = collider.gameObject.GetComponent<Cannon>();
-            cannon.Die();
+            if(cannon.powerUpTime <= 0) cannon.Die();
             //Destroy(gameObject);
         }
         else if (collider.CompareTag("Bunker"))

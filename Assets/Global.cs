@@ -23,10 +23,13 @@ public class Global : MonoBehaviour {
 
     public bool gameOver;
 
+    public float TTK;
+
     private Vector3 camOrigPos;
     // Use this for initialization
     void Start()
     {
+        TTK = 10;
         Physics.gravity = new Vector3(0.0f, 0.0f, -9.8f);
         totalKilledAliens = 0;
         totalKilledAliens_big = 0;
@@ -56,7 +59,7 @@ public class Global : MonoBehaviour {
         }
 
         //check for win/lose condition
-        if (totalKilledAliens >= totalAliens || lives <= 0) { gameOver = true; }
+        if (totalKilledAliens >= totalAliens || lives <= 0 || TTK <=0) { gameOver = true; }
 
         if (gameOver) {
             EndGame();
@@ -72,7 +75,7 @@ public class Global : MonoBehaviour {
     }
 
     void PlayGame() {
-
+        TTK -= Time.deltaTime;
         if (playerRespawn) {
             CameraShake();
             playerRespawnTimer -= Time.deltaTime;
@@ -101,6 +104,7 @@ public class Global : MonoBehaviour {
     }
 
     public void UpdateTotalKilledAliens(int alienType) {
+        TTK = 7;
         ++totalKilledAliens;
         if(0 == alienType) {        //big
             ++totalKilledAliens_big;
