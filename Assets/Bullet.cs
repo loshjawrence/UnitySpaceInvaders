@@ -8,6 +8,8 @@ public class Bullet : MonoBehaviour {
     public Vector2 widthThreshold;
     public Vector2 heightThreshold;
     public bool fromPlayer;
+    public bool active;
+    public float elasticity;
 
     public GameObject deathExplosion;
     public AudioClip deathKnell;
@@ -15,14 +17,18 @@ public class Bullet : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
+        active = true;
+
         widthThreshold = new Vector2(0, Camera.main.pixelWidth);
         heightThreshold = new Vector2(0, Camera.main.pixelHeight);
 
         //travel z axis
-        thrust.z = 400.0f;
+        thrust.z = 100.0f;
+        //elasticity = 0.8f;
 
         //do not passively decelerate
         GetComponent<Rigidbody>().drag = 0;
+        GetComponent<Rigidbody>().useGravity = false;
 
         //set the dir it will travel
         GetComponent<Rigidbody>().MoveRotation(heading);
@@ -31,43 +37,60 @@ public class Bullet : MonoBehaviour {
         GetComponent<Rigidbody>().AddRelativeForce(thrust);
     }
 
-
+    private void SetPhysicsDeadState() {
+        active = false;
+        GetComponent<Rigidbody>().useGravity = true;
+    }
+    private void SetPhysicsPassiveState() {
+        GetComponent<Rigidbody>().useGravity = true;
+        //GetComponent<Rigidbody>().velocity = elasticity * -GetComponent<Rigidbody>().velocity; ;
+    }
     private void OnCollisionEnter(Collision collision) {
         //the collision contains a lot of info, but it's the colliding
         //object we're most interested in.
 
         Collider collider = collision.collider;//the thing we collided with
-        if (collider.CompareTag("Alien") && fromPlayer) {
+        if (collider.CompareTag("Alien") && active) {
+            SetPhysicsDeadState();
             //get handle to alien script and tell it to die
             Alien alien = collider.gameObject.GetComponent<Alien>();
             alien.Die();
-
-            //Destroy the bullet which collided with the alien;
-            Destroy(gameObject);
-        } else if (collider.CompareTag("Alien") && !fromPlayer) {
-            Physics.IgnoreCollision(collision.collider, gameObject.GetComponent<Collider>());
-
-        } else if(collider.CompareTag("Cannon")) {
+            GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
+            //Destroy(gameObject);
+            //} else if (collider.CompareTag("Alien") && !fromPlayer) {
+            //    SetPhysicsDeadState();
+            //    Physics.IgnoreCollision(collision.collider, gameObject.GetComponent<Collider>());
+        }
+        else if (collider.CompareTag("Cannon") && !fromPlayer && active)
+        {
+            SetPhysicsDeadState();
             //get handle to alien script and tell it to die
             Cannon cannon = collider.gameObject.GetComponent<Cannon>();
             cannon.Die();
-
-            //Destroy the bullet which collided with the alien;
-            Destroy(gameObject);
-        } else if(collider.CompareTag("Bunker")) {
+            //Destroy(gameObject);
+        }
+        else if (collider.CompareTag("Bunker"))
+        {
+            SetPhysicsDeadState();
             //get handle to alien script and tell it to die
             Bunker bunker = collider.gameObject.GetComponent<Bunker>();
             bunker.Die();
-            //Destroy the bullet which collided with the alien;
-            Destroy(gameObject);
+            //Destroy(gameObject);
             //Debug.Log("Collided with: " + collider.tag);
-        } else if(collider.CompareTag("Bullet")) {
-            //get handle to alien script and tell it to die
-            Bullet bullet = collider.gameObject.GetComponent<Bullet>();
-            bullet.Die();
-            //Destroy the bullet which collided with the alien;
-            Destroy(gameObject);
-            //Debug.Log("Collided with: " + collider.tag);
+        }
+        //else if (collider.CompareTag("Bullet"))
+        //{
+        //    SetPhysicsDeadState();
+        //    //get handle to alien script and tell it to die
+        //    //Bullet bullet = collider.gameObject.GetComponent<Bullet>();
+        //    //bullet.Die();
+        //    //Destroy(gameObject);
+        //    //Debug.Log("Collided with: " + collider.tag);
+        //    //} else if(collider.CompareTag("Ground")) {
+        //}
+        else
+        { //THEY NEED COLLIDERS TO ENTER HERE
+            SetPhysicsDeadState();
         }
     }
 

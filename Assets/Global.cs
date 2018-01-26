@@ -27,6 +27,7 @@ public class Global : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
+        Physics.gravity = new Vector3(0.0f, 0.0f, -9.8f);
         totalKilledAliens = 0;
         totalKilledAliens_big = 0;
         totalKilledAliens_med = 0;
