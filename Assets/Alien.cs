@@ -52,7 +52,11 @@ public class Alien : MonoBehaviour {
         GameObject obj = GameObject.Find("GlobalObject");
         Global g = obj.GetComponent<Global>();
         if (active) {
-            g.score += pointValue;
+            //g.score += pointValue;
+            GameObject player = GameObject.Find("Cannon");
+            Cannon c = player.GetComponent<Cannon>();
+            int bonusPoints = c.powerUpTime > 0.0 ? c.bonusPoints : 0;
+            g.AdjustScore(pointValue + bonusPoints);
             g.UpdateTotalKilledAliens(0);
         }
         active = false;

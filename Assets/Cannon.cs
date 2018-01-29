@@ -14,10 +14,12 @@ public class Cannon : MonoBehaviour {
     public GameObject deathExplosion;
     public AudioClip deathKnell;
     public float powerUpTime;
+    public int bonusPoints;
 
 	// Use this for initialization
 	void Start () {
         //turnSpeed = 0.5f;
+        bonusPoints = 2;
         powerUpTime = 0;
         thrustSpeed = 0.20f;
         rotation = 0.0f;

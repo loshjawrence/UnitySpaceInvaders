@@ -118,6 +118,7 @@ public class Global : MonoBehaviour {
     public void UpdateLives()
     {
         --lives;
+        AdjustScore(-20);
         playerRespawn = true;
         playerRespawnTimer = 2;
     }
@@ -129,5 +130,9 @@ public class Global : MonoBehaviour {
         float x = Random.Range(-range, range);
         float y = Random.Range(-range, range);
         Camera.main.transform.Translate(new Vector3(x, y, 0));//THIS IS LOCAL
+    }
+    public void AdjustScore(int adj)
+    {
+        score += adj;
     }
 }
